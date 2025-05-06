@@ -1,5 +1,7 @@
 package cm.modelo;
 
+import cm.excecao.ExplosaoException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -22,10 +24,15 @@ public class Tabuleiro {
     }
 
     public void abrir(int linha, int coluna){
-        campos.parallelStream()
-                .filter(campo -> campo.getLinha() == linhas && campo.getColuna() == colunas)
-                .findFirst()
-                .ifPresent(Campo::abrir);
+        try {
+            campos.parallelStream()
+                    .filter(campo -> campo.getLinha() == linhas && campo.getColuna() == colunas)
+                    .findFirst()
+                    .ifPresent(Campo::abrir);
+        } catch (ExplosaoException e){
+            campos.forEach(campo -> campo.setAberto(true));
+            throw e;
+        }
     }
 
     public void alternarMarcacao(int linha, int coluna){
